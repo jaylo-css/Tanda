@@ -5,6 +5,7 @@ import { LangProvider } from "@/components/LangProvider";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SkipLink } from "@/components/SkipLink";
+import { SessionProvider } from "@/components/SessionProvider";
 
 // Atkinson Hyperlegible was designed by the Braille Institute for low-vision readers.
 const atkinson = Atkinson_Hyperlegible({
@@ -31,12 +32,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fil" className={atkinson.variable}>
       <body className="flex min-h-dvh flex-col">
         <LangProvider>
-          <SkipLink />
-          <Header />
-          <main id="main" className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6">
-            {children}
-          </main>
-          <Footer />
+          <SessionProvider>
+            <SkipLink />
+            <Header />
+            <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6">
+              {children}
+            </main>
+            <Footer />
+          </SessionProvider>
         </LangProvider>
       </body>
     </html>

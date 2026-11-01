@@ -6,7 +6,7 @@ export default function AboutPage() {
   const { t } = useLang();
   const a = t.about;
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-3xl space-y-8">
       <header className="space-y-2">
         <h1 className="text-3xl font-bold text-brand">{a.title}</h1>
         <p className="text-lg">{a.lead}</p>

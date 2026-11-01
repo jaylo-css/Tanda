@@ -60,5 +60,15 @@ export const extractedPrescriptionSchema = z.object({
   unreadable_notes: z.array(z.string()).default([]),
 });
 
+/** What the model reads from the PRINTED label of a medicine box / bottle / blister pack. */
+export const boxLabelSchema = z.object({
+  generic_name: text,
+  brand_name: text,
+  strength: text,
+  dosage_form: dosageForm,
+  confidence: z.object({ generic_name: confidence01, strength: confidence01 }),
+});
+export type BoxLabel = z.infer<typeof boxLabelSchema>;
+
 export type ExtractedMedicine = z.infer<typeof extractedMedicineSchema>;
 export type ExtractedPrescription = z.infer<typeof extractedPrescriptionSchema>;

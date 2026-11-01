@@ -35,7 +35,7 @@ export function Header() {
   const { t } = useLang();
   return (
     <header className="no-print border-b-2 border-line bg-white">
-      <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3">
         <Link href="/" className="flex min-h-12 items-center gap-3 text-brand" aria-label={`${t.appName} - ${t.nav.home}`}>
           <Logo />
           <span className="text-2xl font-bold tracking-tight">{t.appName}</span>

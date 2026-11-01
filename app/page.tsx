@@ -6,7 +6,7 @@ import { useLang } from "@/components/LangProvider";
 export default function HomePage() {
   const { t } = useLang();
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-3xl space-y-8">
       <section className="space-y-4">
         <h1 className="text-3xl font-bold leading-tight text-brand">{t.home.title}</h1>
         <p className="text-lg">{t.home.body}</p>
