@@ -99,12 +99,40 @@ body {
   cursor: not-allowed;
 }
 
-/* Printing: only the prescription card (used from Milestone 3) */
+/*
+ * Printing / "Save as PDF" (browser print dialog). Only the prescription card is printed:
+ * header, footer, buttons and the language toggle are hidden. Cards never split across pages.
+ */
+.avoid-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
 @media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
   .no-print {
     display: none !important;
   }
+  html {
+    font-size: 16px;
+  }
   body {
-    background: #fff;
+    background: #fff !important;
+    color: #000 !important;
+  }
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  .print-area {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print-area a {
+    text-decoration: none;
+    color: inherit;
   }
 }

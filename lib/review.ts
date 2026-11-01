@@ -9,10 +9,12 @@
  *  - "Final" is blocked while any amber field is unconfirmed OR any line is unconfirmed.
  *  - "para saan" is ONLY ever what the reviewer typed. It is never filled in by code or AI.
  */
+import { boxWarnings } from "./boxmatch";
 import { CONFIDENCE_THRESHOLD, type DosageForm, type ExtractedMedicine } from "./schema";
 import {
   composeSig,
   formatAmount,
+  type Amount,
   parseSig,
   SLOT_IDS,
   UNREADABLE_EN,
@@ -26,14 +28,20 @@ import {
 
 export type AmberKey = "name" | "strength" | "instructions" | "slots";
 
+export interface BoxWarning {
+  kind: "strength" | "name" | "strength_unknown";
+  /** danger = red (a real difference); caution = amber (could not compare). */
+  severity: "danger" | "caution";
+  tl: string;
+  en: string;
+}
+
 export interface BoxCheck {
-  /** Text read from the printed box label (suggestion only). */
+  /** Text read from the printed box label (suggestion only; the AI never decides the match). */
   label: { generic_name: string; brand_name: string; strength: string };
-  /** The reviewer confirmed this box matches this prescription line. */
+  /** The person confirmed this box matches this prescription line. */
   confirmedByUser: boolean;
-  /** Red warning text when the box strength differs from the prescription (null = no problem found). */
-  warningTl: string | null;
-  warningEn: string | null;
+  warnings: BoxWarning[];
 }
 
 export interface MedicinePhoto {
@@ -172,6 +180,10 @@ export function editText(e: MedicineEntry, field: TextField, value: string): Med
     next.confidence = { ...e.confidence, strength: nonEmpty ? 1 : 0 };
     next.confirmed = { ...e.confirmed, strength: nonEmpty };
   }
+  // if a box photo is attached, its warnings must follow the corrected name/strength
+  if (next.photo?.box && (field === "genericName" || field === "brandName" || field === "strength")) {
+    next.photo = { ...next.photo, box: { ...next.photo.box, warnings: boxWarnings(next.photo.box.label, next) } };
+  }
   return next;
 }
 
@@ -291,6 +303,11 @@ export interface DisplayMedicine {
   /** Only what the reviewer typed. */
   paraSaan: string;
   hasPhoto: boolean;
+  amount: Amount | null;
+  /** The person's own photo of the actual box (data URL), or null: then only a form icon is shown. */
+  photoUrl: string | null;
+  /** Warnings from comparing the photographed box with this line (red = real difference). */
+  boxWarnings: BoxWarning[];
 }
 
 export function toDisplay(e: MedicineEntry): DisplayMedicine {
@@ -310,5 +327,8 @@ export function toDisplay(e: MedicineEntry): DisplayMedicine {
     prn: e.sig.prn,
     paraSaan: e.paraSaan.trim(),
     hasPhoto: !!e.photo,
+    amount: e.sig.amount,
+    photoUrl: e.photo?.dataUrl ?? null,
+    boxWarnings: e.photo?.box?.warnings ?? [],
   };
 }

@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useLang } from "@/components/LangProvider";
 import { useSession, type Role } from "@/components/SessionProvider";
 import { MedicineCard } from "@/components/review/MedicineCard";
+import { BoxPhoto } from "@/components/review/BoxPhoto";
 import { inputClass } from "@/components/review/Field";
+import { buildBoxCheck } from "@/lib/boxmatch";
 import { fmt } from "@/lib/i18n";
-import { canFinalize } from "@/lib/review";
+import { canFinalize, setPhoto } from "@/lib/review";
 
 export default function ReviewPage() {
   const { t } = useLang();
@@ -90,7 +92,28 @@ export default function ReviewPage() {
           {s.entries.length === 0 && <p className="font-bold">{r.noMedicines}</p>}
           <ol className="space-y-5">
             {s.entries.map((e, i) => (
-              <MedicineCard key={e.id} entry={e} index={i} onChange={(fn) => updateEntry(e.id, fn)} onRemove={() => removeEntry(e.id)} />
+              <MedicineCard
+                key={e.id}
+                entry={e}
+                index={i}
+                onChange={(fn) => updateEntry(e.id, fn)}
+                onRemove={() => removeEntry(e.id)}
+                extra={
+                  <BoxPhoto
+                    entry={e}
+                    index={i}
+                    entries={s.entries}
+                    onChange={(fn) => updateEntry(e.id, fn)}
+                    onMove={(toId, label) => {
+                      const photo = e.photo;
+                      if (!photo) return;
+                      updateEntry(e.id, (x) => setPhoto(x, null));
+                      // the box check is recomputed against the line that receives the photo
+                      updateEntry(toId, (x) => setPhoto(x, { dataUrl: photo.dataUrl, box: buildBoxCheck(label, x, true) }));
+                    }}
+                  />
+                }
+              />
             ))}
           </ol>
 

@@ -48,6 +48,13 @@ export default function SamplesPage() {
         />
       </header>
 
+      <section aria-labelledby="box-sample" className="space-y-3 rounded-2xl border-2 border-line bg-card p-4">
+        <h2 id="box-sample" className="text-2xl font-bold">{s.boxTitle}</h2>
+        <p>{s.boxText}</p>
+        <Image src="/samples/box-amlodipine-10mg.png" alt={s.boxAlt} width={800} height={600} className="w-full max-w-sm rounded-xl border-2 border-line" />
+        <a href="/samples/box-amlodipine-10mg.png" download className="btn btn-secondary">{s.boxSave}</a>
+      </section>
+
       {SAMPLES.map((sample) => (
         <section key={sample.id} aria-labelledby={sample.id} className="space-y-4">
           <h2 id={sample.id} className="text-2xl font-bold">

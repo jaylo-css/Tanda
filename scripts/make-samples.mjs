@@ -153,6 +153,41 @@ function buildHtml(sample) {
 </body></html>`;
 }
 
+/** A fake medicine box (printed label) for trying the "photograph the box" feature. */
+function boxHtml(o) {
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+  body{margin:0;width:800px;height:600px;background:linear-gradient(135deg,#d9e2ea,#eef2f6);font-family:Arial,Helvetica,sans-serif;position:relative;overflow:hidden}
+  .box{position:absolute;left:90px;top:70px;width:620px;height:460px;background:#fff;border:6px solid ${o.color};border-radius:14px;box-shadow:10px 14px 30px rgba(0,0,0,.25);overflow:hidden}
+  .band{background:${o.color};color:#fff;padding:18px 28px;font-size:30px;font-weight:700;letter-spacing:.05em}
+  .name{font-size:76px;font-weight:900;margin:26px 28px 0;color:#1a1a1a;line-height:1}
+  .generic{font-size:30px;margin:10px 28px 0;color:#333}
+  .str{position:absolute;right:28px;top:205px;background:${o.color};color:#fff;font-size:54px;font-weight:900;padding:10px 24px;border-radius:12px}
+  .meta{position:absolute;left:28px;bottom:104px;font-size:30px;color:#222}
+  .small{position:absolute;left:28px;bottom:28px;font-size:22px;color:#444;width:560px}
+  .wm{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-20deg);font:900 120px Arial;color:rgba(179,38,30,.22)}
+  </style></head><body><div class="box"><div class="band">${o.band}</div>
+  <div class="name">${o.brand}</div><div class="generic">${o.generic}</div>
+  <div class="str">${o.strength}</div>
+  <div class="meta">${o.form}</div>
+  <div class="small">SAMPLE ONLY — gawa-gawa para sa demo. Hindi totoong gamot. Synthetic demo packaging.</div></div>
+  <div class="wm">SAMPLE</div></body></html>`;
+}
+
+const boxes = [
+  { file: "box-amlodipine-10mg.png", color: "#1f5fa8", band: "SAMPLE PHARMA", brand: "Samplevasc", generic: "AMLODIPINE besilate", strength: "10 mg", form: "30 tablets" },
+];
+for (const b of boxes) {
+  const htmlPath = path.join(tmp, b.file.replace(/\.png$/, ".html"));
+  const pngPath = path.join(outDir, b.file);
+  writeFileSync(htmlPath, boxHtml(b), "utf8");
+  execFileSync(
+    browser,
+    ["--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=1", "--window-size=800,600", "--virtual-time-budget=4000", `--screenshot=${pngPath}`, pathToFileURL(htmlPath).href],
+    { stdio: "ignore", timeout: 60_000 },
+  );
+  console.log(`${b.file}: ${(statSync(pngPath).size / 1024).toFixed(0)} KB`);
+}
+
 for (const sample of SAMPLES) {
   const htmlPath = path.join(tmp, `${sample.id}.html`);
   const pngPath = path.join(root, "public", sample.image.replace(/^\//, ""));
