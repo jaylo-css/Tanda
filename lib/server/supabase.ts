@@ -49,6 +49,29 @@ async function mustOk(sb: Supabase, res: Response, what: string): Promise<Respon
   throw new SupabaseError(`${what} failed (${res.status}): ${text}`);
 }
 
+let readyCache: { at: number; ok: boolean } | null = null;
+
+/**
+ * Is sharing actually usable (keys set AND the "shares" table exists)? Cached for a minute so the
+ * Share button never appears on a deployment where it would only fail.
+ */
+export async function isShareReady(sb: Supabase, now: number = Date.now()): Promise<boolean> {
+  if (readyCache && now - readyCache.at < 60_000) return readyCache.ok;
+  let ok = false;
+  try {
+    const res = await call(sb, "GET", "/rest/v1/shares?select=id&limit=1");
+    ok = res.ok;
+  } catch {
+    ok = false;
+  }
+  readyCache = { at: now, ok };
+  return ok;
+}
+
+export function resetShareReadyCache(): void {
+  readyCache = null;
+}
+
 export function newShareId(): string {
   return randomBytes(16).toString("base64url"); // 22 chars, 128 bits: unguessable
 }

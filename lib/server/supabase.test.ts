@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createShare, expiryFor, getSupabase, newShareId, purgeExpired, readShare, SHARE_ID_RE, type Supabase } from "./supabase";
+import { createShare, expiryFor, getSupabase, isShareReady, newShareId, purgeExpired, readShare, resetShareReadyCache, SHARE_ID_RE, type Supabase } from "./supabase";
 import { buildPrescriptionData } from "../prescription";
 import { confirmField, confirmLine, entryFromExtracted, pendingAmber, setPhoto } from "../review";
 import { sharePayloadSchema, toSharePayload } from "../shareSchema";
@@ -183,6 +183,29 @@ describe("share links: privacy and safety", () => {
     const huge = payload();
     huge.data.medicines = Array.from({ length: 31 }, (_, i) => ({ ...payload().data.medicines[0], id: `m${i}` }));
     expect(sharePayloadSchema.safeParse(huge).success).toBe(false);
+  });
+});
+
+describe("the Share button only appears when sharing really works", () => {
+  it("not ready when the shares table does not exist yet (PGRST205 / 404)", async () => {
+    resetShareReadyCache();
+    vi.stubGlobal("fetch", async () => new Response(JSON.stringify({ code: "PGRST205" }), { status: 404 }));
+    expect(await isShareReady(SB)).toBe(false);
+  });
+  it("ready once the table exists, and the answer is cached for a minute", async () => {
+    resetShareReadyCache();
+    let calls = 0;
+    vi.stubGlobal("fetch", async () => { calls++; return new Response("[]", { status: 200 }); });
+    expect(await isShareReady(SB, 1_000)).toBe(true);
+    expect(await isShareReady(SB, 30_000)).toBe(true);
+    expect(calls).toBe(1);
+    expect(await isShareReady(SB, 70_000)).toBe(true); // cache expired: asks again
+    expect(calls).toBe(2);
+  });
+  it("not ready if Supabase cannot be reached", async () => {
+    resetShareReadyCache();
+    vi.stubGlobal("fetch", async () => { throw new Error("network down"); });
+    expect(await isShareReady(SB)).toBe(false);
   });
 });
 
