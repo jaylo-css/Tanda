@@ -115,6 +115,40 @@ export const STRINGS = {
 
     common: { remove: "Alisin", tryAgain: "Subukan ulit", back: "Bumalik" },
 
+    actions: {
+      listen: "Pakinggan",
+      stop: "Itigil",
+      reading: "Binabasa nang malakas...",
+      hearThis: "Pakinggan ito",
+      print: "I-print",
+      printHint: "Piliin ang “Save as PDF” sa print window para gumawa ng PDF.",
+      share: "Ibahagi sa pamilya",
+      noFilipinoVoice: "Walang boses na Filipino sa device na ito, kaya Ingles ang babasahin.",
+      readTagalogAnyway: "Basahin pa rin ang Tagalog gamit ang boses na Ingles",
+      noSpeech: "Hindi kayang magbasa nang malakas ng browser na ito.",
+      shareTitle: "Ibahagi sa pamilya",
+      shareNotice: "Gagawa ng link na mabubuksan ng sinumang may link, nang walang login. Ang malinaw na reseta lang (pangalan ng pasyente, mga gamot, at mga litrato ng gamot na kinuha mo) ang maiimbak, hindi ang litrato ng reseta. Mawawala ito pagkalipas ng 30 araw.",
+      shareCreate: "Gumawa ng link",
+      shareCancel: "Huwag muna",
+      sharing: "Ginagawa ang link...",
+      shareFail: "Hindi nagawa ang link. Subukan ulit.",
+      shareRate: "Masyadong maraming link na ginawa. Subukan ulit mamaya.",
+      shareReady: "Handa na ang link para sa pamilya",
+      shareLink: "Link para sa pamilya",
+      copy: "Kopyahin ang link",
+      copied: "Nakopya na!",
+      qrAlt: "QR code ng link para sa pamilya",
+      qrHint: "Maaaring i-scan ang QR code para buksan ang link.",
+      expires: "Mawawala ang link na ito sa {date}.",
+    },
+
+    shared: {
+      title: "Hindi mahanap ang pahinang ito",
+      body: "Maaaring nag-expire na ang link (nawawala ito pagkalipas ng 30 araw) o mali ang link. Humingi ng bagong link sa nagbahagi.",
+      home: "Pumunta sa Tanda",
+      readOnly: "Kopyang binabasa lang. Ibinahagi ng pamilya mo.",
+    },
+
     photos: {
       title: "Ano ang itsura ng gamot?",
       intro: "Kunan ng litrato ang aktwal na kahon, bote o blister pack. Kung walang litrato, icon lang ng uri ng gamot ang ipapakita.",
@@ -359,6 +393,40 @@ export const STRINGS = {
     },
 
     common: { remove: "Remove", tryAgain: "Try again", back: "Back" },
+
+    actions: {
+      listen: "Listen",
+      stop: "Stop",
+      reading: "Reading aloud...",
+      hearThis: "Hear this one",
+      print: "Print",
+      printHint: "Choose “Save as PDF” in the print window to make a PDF.",
+      share: "Share with family",
+      noFilipinoVoice: "This device has no Filipino voice, so the English version will be read.",
+      readTagalogAnyway: "Read the Tagalog with an English voice anyway",
+      noSpeech: "This browser cannot read aloud.",
+      shareTitle: "Share with family",
+      shareNotice: "This makes a link that anyone who has it can open, with no login. Only the clear prescription (patient name, medicines, and the medicine photos you took) is stored, not the photo of the prescription. It disappears after 30 days.",
+      shareCreate: "Make the link",
+      shareCancel: "Not now",
+      sharing: "Making the link...",
+      shareFail: "The link could not be made. Try again.",
+      shareRate: "Too many links made. Try again later.",
+      shareReady: "The family link is ready",
+      shareLink: "Family link",
+      copy: "Copy the link",
+      copied: "Copied!",
+      qrAlt: "QR code for the family link",
+      qrHint: "The QR code can be scanned to open the link.",
+      expires: "This link stops working on {date}.",
+    },
+
+    shared: {
+      title: "This page cannot be found",
+      body: "The link may have expired (links disappear after 30 days) or may be wrong. Ask the sender for a new link.",
+      home: "Go to Tanda",
+      readOnly: "Read-only copy, shared by your family.",
+    },
 
     photos: {
       title: "What does the medicine look like?",

@@ -16,8 +16,10 @@ interface Props {
   expiresAt?: string;
   /** Buttons / extra controls placed under the header (read aloud, print, share). */
   actions?: ReactNode;
-  /** Index of the medicine being read aloud right now (highlighted). */
+  /** Id of the medicine being read aloud right now (highlighted). */
   speakingId?: string | null;
+  /** When set, each medicine gets its own "hear this one" button. */
+  onSpeak?: (id: string) => void;
 }
 
 const TIMING_TEXT: Record<Lang, Record<string, string>> = {
@@ -30,7 +32,7 @@ const TIMING_TEXT: Record<Lang, Record<string, string>> = {
  * card and the family share page (/s/[id]), so all three always look and read the same.
  * Body text is at least 18px; every icon sits next to a word.
  */
-export function PrescriptionView({ data, expiresAt, actions, speakingId }: Props) {
+export function PrescriptionView({ data, expiresAt, actions, speakingId, onSpeak }: Props) {
   const { lang, t } = useLang();
   const r = t.result;
   const schedule = buildSchedule(data.medicines);
@@ -61,7 +63,7 @@ export function PrescriptionView({ data, expiresAt, actions, speakingId }: Props
 
       <ol className="space-y-4" aria-label={r.medicines}>
         {data.medicines.map((m, i) => (
-          <MedicineCard key={m.id} m={m} index={i} lang={lang} speaking={speakingId === m.id} />
+          <MedicineCard key={m.id} m={m} index={i} lang={lang} speaking={speakingId === m.id} onSpeak={onSpeak} />
         ))}
       </ol>
 
@@ -159,7 +161,7 @@ function Thumb({ m, size }: { m: DisplayMedicine; size: number }) {
   return <span className="shrink-0"><FormIcon form={m.form} size={size} /></span>;
 }
 
-function MedicineCard({ m, index, lang, speaking }: { m: DisplayMedicine; index: number; lang: Lang; speaking: boolean }) {
+function MedicineCard({ m, index, lang, speaking, onSpeak }: { m: DisplayMedicine; index: number; lang: Lang; speaking: boolean; onSpeak?: (id: string) => void }) {
   const { t } = useLang();
   const r = t.result;
   const unreadable = m.name === null;
@@ -208,6 +210,12 @@ function MedicineCard({ m, index, lang, speaking }: { m: DisplayMedicine; index:
         <p className="text-xl"><span className="font-bold">{r.forWhat}:</span> {m.paraSaan}</p>
       )}
       <BoxWarnings warnings={m.boxWarnings} large />
+      {onSpeak && (
+        <button type="button" className="btn btn-secondary no-print w-full" onClick={() => onSpeak(m.id)}>
+          <span aria-hidden="true">🔊</span> {t.actions.hearThis}
+          <span className="sr-only">: {m.name ?? ""}</span>
+        </button>
+      )}
     </li>
   );
 }

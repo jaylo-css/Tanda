@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { useLang } from "@/components/LangProvider";
-import { PrescriptionView } from "@/components/PrescriptionView";
+import { PrescriptionScreen } from "@/components/PrescriptionScreen";
 import { useSession } from "@/components/SessionProvider";
 import { buildPrescriptionData } from "@/lib/prescription";
 
@@ -30,11 +30,12 @@ export default function ResultPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      <PrescriptionView
+    <div className="mx-auto max-w-3xl">
+      <PrescriptionScreen
         data={data}
-        actions={
-          <Link href="/review" onClick={reopen} className="btn btn-secondary">
+        allowShare
+        extra={
+          <Link href="/review" onClick={reopen} className="btn btn-secondary w-full">
             {t.result.edit}
           </Link>
         }

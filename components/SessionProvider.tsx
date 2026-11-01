@@ -32,6 +32,12 @@ export interface Header {
   date: string;
 }
 
+export interface ShareInfo {
+  url: string;
+  /** ISO time the link stops working (30 days after it was made). */
+  expiresAt: string;
+}
+
 export interface Session {
   status: Status;
   error: SessionError | null;
@@ -47,7 +53,7 @@ export interface Session {
   /** ISO time the human finalised the clear version; null = still in review. */
   finalizedAt: string | null;
   /** Set when a share link was made for the finalised version. */
-  shareUrl: string | null;
+  share: ShareInfo | null;
 }
 
 const emptyHeader: Header = {
@@ -69,7 +75,7 @@ const initial: Session = {
   entries: [],
   unreadableNotes: [],
   finalizedAt: null,
-  shareUrl: null,
+  share: null,
 };
 
 type Action =
@@ -84,7 +90,7 @@ type Action =
   | { type: "remove"; id: string }
   | { type: "finalize" }
   | { type: "reopen" }
-  | { type: "shareUrl"; url: string | null };
+  | { type: "share"; share: ShareInfo | null };
 
 const newId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `m${Math.random().toString(36).slice(2)}`;
@@ -113,7 +119,7 @@ function reducer(s: Session, a: Action): Session {
         entries: a.data.medicines.map((m) => entryFromExtracted(m, newId())),
         unreadableNotes: a.data.unreadable_notes,
         finalizedAt: null,
-        shareUrl: null,
+        share: null,
       };
     case "consent":
       return { ...s, consent: a.value };
@@ -122,18 +128,18 @@ function reducer(s: Session, a: Action): Session {
     case "header":
       return { ...s, header: a.fn(s.header) };
     case "update":
-      return { ...s, entries: s.entries.map((e) => (e.id === a.id ? a.fn(e) : e)), finalizedAt: null, shareUrl: null };
+      return { ...s, entries: s.entries.map((e) => (e.id === a.id ? a.fn(e) : e)), finalizedAt: null, share: null };
     case "add":
-      return { ...s, entries: [...s.entries, blankEntry(newId())], finalizedAt: null, shareUrl: null };
+      return { ...s, entries: [...s.entries, blankEntry(newId())], finalizedAt: null, share: null };
     case "remove":
-      return { ...s, entries: s.entries.filter((e) => e.id !== a.id), finalizedAt: null, shareUrl: null };
+      return { ...s, entries: s.entries.filter((e) => e.id !== a.id), finalizedAt: null, share: null };
     case "finalize":
       // the gate is enforced here too, not just by a disabled button
       return canFinalize(s.entries).ok ? { ...s, finalizedAt: new Date().toISOString() } : s;
     case "reopen":
-      return { ...s, finalizedAt: null, shareUrl: null };
-    case "shareUrl":
-      return { ...s, shareUrl: a.url };
+      return { ...s, finalizedAt: null, share: null };
+    case "share":
+      return { ...s, share: a.share };
   }
 }
 
@@ -151,7 +157,7 @@ interface SessionApi {
   removeEntry: (id: string) => void;
   finalize: () => void;
   reopen: () => void;
-  setShareUrl: (url: string | null) => void;
+  setShare: (share: ShareInfo | null) => void;
 }
 
 const Ctx = createContext<SessionApi | null>(null);
@@ -245,7 +251,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       removeEntry: (id) => dispatch({ type: "remove", id }),
       finalize: () => dispatch({ type: "finalize" }),
       reopen: () => dispatch({ type: "reopen" }),
-      setShareUrl: (url) => dispatch({ type: "shareUrl", url }),
+      setShare: (share) => dispatch({ type: "share", share }),
     }),
     [s, runExtraction, startManual, reset],
   );
