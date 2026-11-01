@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. Built for older eyes and low-literacy readers:
+ * - body text 18px minimum, generous line height
+ * - high contrast (all text/background pairs below meet WCAG AA; most meet AAA)
+ * - amber = "a human must confirm this", red = "danger / mismatch", green = brand
+ */
+@theme {
+  --color-paper: #fffcf5;
+  --color-card: #ffffff;
+  --color-ink: #1a1a1a;
+  --color-muted: #454545;
+  --color-line: #cfc7b2;
+  --color-brand: #0b5d4b;
+  --color-brand-dark: #08463a;
+  --color-brand-soft: #e3f2ec;
+  --color-amber-soft: #fff1cc;
+  --color-amber-line: #a35c00;
+  --color-amber-ink: #5c3300;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
+  --font-sans: var(--font-atkinson), "Segoe UI", system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  font-size: 18px; /* 1rem = 18px, so "text-base" is already the 18px minimum */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+/* Visible keyboard / switch-access focus everywhere */
+:focus-visible {
+  outline: 4px solid #1d4ed8;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Respect people who turn animations off */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Reusable button styles (min 48px tap target) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.9rem;
+  border: 2px solid var(--color-brand);
+  font-weight: 700;
+  font-size: 1rem;
+  text-align: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+.btn-primary {
+  background: var(--color-brand);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--color-brand-dark);
+}
+.btn-secondary {
+  background: #fff;
+  color: var(--color-brand);
+}
+.btn-secondary:hover {
+  background: var(--color-brand-soft);
+}
+.btn-xl {
+  min-height: 4.25rem;
+  font-size: 1.3rem;
+  padding: 0.9rem 1.5rem;
+  width: 100%;
+}
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Printing: only the prescription card (used from Milestone 3) */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}
