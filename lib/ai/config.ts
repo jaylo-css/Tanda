@@ -64,8 +64,11 @@ export const AI_CONFIG = {
     requestsPerHourPerIp: 10,
     /** Give up on the AI and use demo data after this long (spec: 15 s). Applies to SAMPLE images. */
     requestTimeoutMs: 15_000,
-    /** Real uploads (no demo data to fall back on) get longer, e.g. for hard handwriting. */
-    uploadTimeoutMs: 25_000,
+    /**
+     * Real uploads (no demo data to fall back on) get longer: if Gemini is down, the Cloudflare
+     * backup needs 22-41 s (measured). Samples keep the 15 s limit above, then use saved data.
+     */
+    uploadTimeoutMs: 50_000,
     /** Box-label photos are a helper; separate, looser bucket than prescriptions. */
     boxRequestsPerHourPerIp: 20,
     /** Largest image the server accepts, after client-side resize (bytes). */

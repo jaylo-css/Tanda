@@ -5,9 +5,13 @@ import { AiError, scrub, type AiProvider, type GenerateRequest } from "./provide
  * Cloudflare Workers AI fallback (@cf/meta/llama-3.2-11b-vision-instruct), via REST.
  * Server-side only. Free allocation: 10,000 neurons/day.
  *
- * NOTE: written from Cloudflare's documented request shape but NOT yet tested against a live
- * account in this repo. The first call may need the one-time Meta licence acceptance, which
- * is handled below (error code 5016 -> send "agree" once, then retry).
+ * LIVE-TESTED 2026-11-02 against a real account: works, but it is a LAST RESORT.
+ *  - 22-41 s per prescription (vs ~4 s for Gemini), so the route gives it all remaining time
+ *  - reads are less accurate (wrong year on the messy sample) and it reports 1.0 confidence on
+ *    everything, so lib/ai/extract.ts caps its confidence and the review screen warns the user
+ *  - cost: ~60-100 of the 10,000 free neurons per prescription
+ * The first call may need the one-time Meta licence acceptance, handled below
+ * (error code 5016 -> send "agree" once, then retry).
  */
 export class CloudflareProvider implements AiProvider {
   readonly name = "cloudflare";
@@ -42,10 +46,18 @@ export class CloudflareProvider implements AiProvider {
     if (req.image) {
       content.push({ type: "image_url", image_url: { url: `data:${req.image.mimeType};base64,${req.image.base64}` } });
     }
-    const body = { messages: [{ role: "user", content }], max_tokens: 1800, temperature: 0 };
+    const base = { messages: [{ role: "user", content }], max_tokens: 1800, temperature: 0 };
+    // Measured 2026-11-02: without a schema this model answers in prose ("The image is a photo of...")
+    // and takes ~40 s; with json_schema it returns a clean JSON object.
+    const body = req.jsonSchema ? { ...base, response_format: { type: "json_schema", json_schema: req.jsonSchema } } : base;
 
     let res = await this.post(body, req.timeoutMs);
     let payload = (await res.json().catch(() => ({}))) as CfResponse;
+    // if the schema itself is rejected, try once more without it (parsing/validation still protect us)
+    if (res.status === 400 && req.jsonSchema) {
+      res = await this.post(base, req.timeoutMs);
+      payload = (await res.json().catch(() => ({}))) as CfResponse;
+    }
 
     // first use of this model: accept Meta's licence once, then retry
     if (!res.ok && payload.errors?.some((e) => e.code === 5016)) {

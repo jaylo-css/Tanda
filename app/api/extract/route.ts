@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { AI_CONFIG } from "@/lib/ai/config";
 import { getProviders } from "@/lib/ai";
-import { ReadError, readPrescription } from "@/lib/ai/extract";
+import { BACKUP_CONFIDENCE_CAP, capConfidence, ReadError, readPrescription } from "@/lib/ai/extract";
 import { checkRateLimit, clientIp } from "@/lib/rateLimit";
 import { getSample } from "@/lib/samples";
 import { readImageUpload, UploadError } from "@/lib/server/upload";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 30;
+// A real upload may fall back to the slow backup model (22-41 s measured), so allow up to 60 s.
+export const maxDuration = 60;
 
 type Fail = { ok: false; code: string; tl: string; en: string; manual: true };
 const fail = (status: number, code: string, tl: string, en: string, headers?: HeadersInit) =>
@@ -54,7 +55,9 @@ export async function POST(req: Request) {
   const providers = getProviders();
   const budget = sample ? AI_CONFIG.limits.requestTimeoutMs : AI_CONFIG.limits.uploadTimeoutMs;
   try {
-    const { data, provider } = await readPrescription(providers, upload.image, Date.now() + budget);
+    const { data: raw, provider } = await readPrescription(providers, upload.image, Date.now() + budget);
+    // a backup model's confidence scores are not trusted: everything it read must be confirmed by a person
+    const data = provider === "gemini" ? raw : capConfidence(raw, BACKUP_CONFIDENCE_CAP);
     return NextResponse.json({ ok: true, source: "ai", provider, sampleId: sample?.id ?? null, data });
   } catch (e) {
     const code = e instanceof ReadError ? e.code : "ai_failed";

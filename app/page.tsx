@@ -1,10 +1,32 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { useLang } from "@/components/LangProvider";
+import { ReadingStatus } from "@/components/ReadingStatus";
+import { useSession } from "@/components/SessionProvider";
+import { SAMPLES, type SamplePrescription } from "@/lib/samples";
+
+/** The sample the home button runs: the messy one shows the safety gate (amber fields, an unreadable line). */
+const HOME_SAMPLE = SAMPLES[2];
 
 export default function HomePage() {
   const { t } = useLang();
+  const router = useRouter();
+  const { s, runExtraction, startManual } = useSession();
+  const last = useRef<SamplePrescription>(HOME_SAMPLE);
+  const busy = s.status === "preparing" || s.status === "reading";
+
+  /** "Try a sample" runs the FULL flow: the sample image goes to the AI, then the review screen. */
+  async function trySample(sample: SamplePrescription) {
+    last.current = sample;
+    const blob = await (await fetch(sample.image)).blob();
+    if (await runExtraction(new File([blob], `${sample.id}.png`, { type: "image/png" }), { raw: true })) {
+      router.push("/review");
+    }
+  }
+
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <section className="space-y-4">
@@ -14,9 +36,19 @@ export default function HomePage() {
           <Link href="/upload" className="btn btn-primary btn-xl">
             <span aria-hidden="true">📷</span> {t.home.upload}
           </Link>
-          <Link href="/samples" className="btn btn-secondary btn-xl">
+          <button type="button" className="btn btn-secondary btn-xl" disabled={busy} onClick={() => void trySample(HOME_SAMPLE)}>
             {t.home.trySample}
-          </Link>
+          </button>
+          <ReadingStatus
+            onRetry={() => void trySample(last.current)}
+            onManual={() => {
+              startManual();
+              router.push("/review");
+            }}
+          />
+          <p className="text-base">
+            <Link href="/samples" className="font-bold text-brand underline">{t.home.moreSamples}</Link>
+          </p>
         </div>
       </section>
 

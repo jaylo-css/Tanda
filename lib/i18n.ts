@@ -36,6 +36,7 @@ export const STRINGS = {
         "I-upload ang litrato ng reseta ng doktor. Gagawa ang Tanda ng malinaw na bersyon: malalaking letra, iskedyul na may larawan, at babasahin nang malakas. Susuriin muna ito ng isang tao bago maging pinal.",
       upload: "I-upload ang reseta",
       trySample: "Subukan ang sample",
+      moreSamples: "Tingnan ang iba pang sample",
       stepsTitle: "Paano ito gumagana",
       steps: [
         { title: "Kunan ng litrato", text: "Kuhanan ng litrato ang reseta, o pumili mula sa gallery." },
@@ -226,7 +227,7 @@ export const STRINGS = {
       seeSamples: "Tingnan ang mga sample",
       preparing: "Inihahanda ang litrato...",
       reading: "Binabasa ang reseta...",
-      readingSub: "Maaaring abutin ng hanggang 25 segundo. Huwag isara ang pahina.",
+      readingSub: "Karaniwang ilang segundo lang, pero maaaring abutin ng hanggang 1 minuto. Huwag isara ang pahina.",
       errorTitle: "May problema",
       imgFail: "Hindi mabuksan ang litrato. Subukan ang ibang litrato.",
       heicFail: "Hindi mabuksan ang HEIC na litrato. Subukang kumuha ng JPG o mag-screenshot.",
@@ -238,6 +239,7 @@ export const STRINGS = {
       intro:
         "Draft lang ang binasa ng AI. Ikaw ang kukumpirma sa bawat linya. Ang kulay-amber ay kailangang kumpirmahin (✓ Tama) o itama.",
       sourceAi: "Binasa ng AI (draft lang)",
+      sourceBackup: "Binasa ng backup na AI (mas mababa ang katumpakan). Lahat ay kailangang kumpirmahin. Suriing mabuti ang bawat numero.",
       sourceDemo: "DEMO: ginamit ang naka-save na resulta ng sample dahil hindi nakasagot ang AI sa oras.",
       sourceManual: "Mano-manong inilagay. Walang binasa ang AI.",
       photoTitle: "Orihinal na litrato",
@@ -315,6 +317,7 @@ export const STRINGS = {
         "Upload a photo of the doctor's prescription. Tanda makes a clear version: large print, a picture schedule, and read-aloud. A person checks it before it becomes final.",
       upload: "Upload the prescription",
       trySample: "Try a sample",
+      moreSamples: "See the other samples",
       stepsTitle: "How it works",
       steps: [
         { title: "Take a photo", text: "Photograph the prescription, or pick one from your gallery." },
@@ -505,7 +508,7 @@ export const STRINGS = {
       seeSamples: "See the samples",
       preparing: "Preparing the photo...",
       reading: "Reading the prescription...",
-      readingSub: "This can take up to 25 seconds. Please do not close the page.",
+      readingSub: "Usually a few seconds, but it can take up to a minute. Please do not close the page.",
       errorTitle: "Something went wrong",
       imgFail: "The photo could not be opened. Try another photo.",
       heicFail: "The HEIC photo could not be opened. Try a JPG or take a screenshot.",
@@ -517,6 +520,7 @@ export const STRINGS = {
       intro:
         "The AI only made a draft. You confirm every line. Amber means it must be confirmed (✓ Correct) or fixed.",
       sourceAi: "Read by AI (draft only)",
+      sourceBackup: "Read by the backup AI (less accurate). Everything must be confirmed. Check every number carefully.",
       sourceDemo: "DEMO: the saved sample result was used because the AI did not answer in time.",
       sourceManual: "Entered by hand. The AI read nothing.",
       photoTitle: "Original photo",

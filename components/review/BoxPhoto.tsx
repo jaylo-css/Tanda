@@ -86,7 +86,11 @@ export function BoxPhoto({ entry, index, entries, onChange, onMove }: Props) {
 
   return (
     <section aria-labelledby={`${id}-h`} className="space-y-3 rounded-xl border-2 border-line p-3">
-      <h4 id={`${id}-h`} className="text-lg font-bold">{p.title}</h4>
+      <h4 id={`${id}-h`} className="text-lg font-bold">
+        {p.title}
+        {/* makes each section's accessible name unique for screen-reader users: "…gamot? Gamot 2" */}
+        <span className="sr-only"> {fmt(t.review.medicineN, { n: index + 1 })}</span>
+      </h4>
       <p className="text-base text-muted">{p.intro}</p>
 
       <input ref={camera} type="file" accept="image/*" capture="environment" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={onPick} />

@@ -17,6 +17,8 @@ export interface GenerateRequest {
   image?: ImageInput;
   /** Ask the model for JSON only (provider-specific where supported). */
   json?: boolean;
+  /** JSON Schema of the expected answer. Used by providers that have a schema-constrained JSON mode (Cloudflare). */
+  jsonSchema?: Record<string, unknown>;
   /** Hard cap for this call. */
   timeoutMs: number;
 }
@@ -58,11 +60,15 @@ export async function generateWithFallback(
 ): Promise<{ text: string; provider: string }> {
   if (providers.length === 0) throw new AiError("unavailable", "No AI provider is configured");
   let last: unknown;
-  for (const p of providers) {
+  for (let i = 0; i < providers.length; i++) {
+    const p = providers[i];
     const remaining = deadlineAt - Date.now();
     if (remaining < 1_500) break;
+    // The LAST provider is the final chance, so it may use all the time that is left; earlier ones
+    // are capped so a slow one cannot starve the fallback.
+    const isLast = i === providers.length - 1;
     try {
-      const text = await p.generate({ ...req, timeoutMs: Math.min(perCallMs, remaining) });
+      const text = await p.generate({ ...req, timeoutMs: isLast ? remaining : Math.min(perCallMs, remaining) });
       return { text, provider: p.name };
     } catch (e) {
       last = e;

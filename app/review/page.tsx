@@ -40,9 +40,15 @@ export default function ReviewPage() {
       <header className="space-y-2">
         <h1 className="text-3xl font-bold text-brand">{r.title}</h1>
         <p>{r.intro}</p>
-        <p className={`rounded-xl border-2 p-3 text-base font-bold ${s.source === "demo" ? "border-amber-line bg-amber-soft text-amber-ink" : "border-line bg-card"}`}>
-          {s.source === "demo" ? r.sourceDemo : s.source === "manual" ? r.sourceManual : r.sourceAi}
-        </p>
+        {(() => {
+          const backup = s.source === "ai" && s.provider !== null && s.provider !== "gemini";
+          const warn = s.source === "demo" || backup;
+          return (
+            <p role={backup ? "alert" : undefined} className={`rounded-xl border-2 p-3 text-base font-bold ${warn ? "border-amber-line bg-amber-soft text-amber-ink" : "border-line bg-card"}`}>
+              {s.source === "demo" ? r.sourceDemo : s.source === "manual" ? r.sourceManual : backup ? r.sourceBackup : r.sourceAi}
+            </p>
+          );
+        })()}
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">

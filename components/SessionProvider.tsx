@@ -195,7 +195,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     try {
       const form = new FormData();
       form.append("image", blob, "prescription." + (blob.type === "image/png" ? "png" : "jpg"));
-      const res = await fetch("/api/extract", { method: "POST", body: form, signal: AbortSignal.timeout(40_000) });
+      const res = await fetch("/api/extract", { method: "POST", body: form, signal: AbortSignal.timeout(70_000) });
       const json = await res.json();
       if (!json.ok) {
         dispatch({ type: "status", status: "error", error: { code: json.code ?? "ai_failed", tl: json.tl, en: json.en } });
